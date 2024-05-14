@@ -3,6 +3,7 @@ import requests
 import json
 import pandas as pd
 from dotenv import load_dotenv
+from title import title
 
 
 load_dotenv()
@@ -89,6 +90,7 @@ def calculate_total_probability(dataframe):
 
 
 # Get upcoming NBA odds
+title()
 df = get_nba_odds()
 print(df)
 result = calculate_total_probability(df)
