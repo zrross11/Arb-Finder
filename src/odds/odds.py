@@ -4,17 +4,17 @@ import json
 from dotenv import load_dotenv
 import pandas as pd
 
-def get_nba_odds():
+def get_odds(sport):
     load_dotenv()
     ODDS_API_KEY = os.getenv("ODDS_API_KEY")
 
-    sports_response = requests.get('https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?regions=us&markets=h2h', params={
+    sports_response = requests.get(f'https://api.the-odds-api.com/v4/sports/{sport}/odds/?regions=us&markets=h2h', params={
         'api_key': ODDS_API_KEY
     })
 
-    nba_upcoming_odds_json = json.loads(sports_response.text)
+    upcoming_odds = json.loads(sports_response.text)
 
-    df = pd.DataFrame(nba_upcoming_odds_json)
+    df = pd.DataFrame(upcoming_odds)
 
     # EST Commence Time
     df['commence_time'] = pd.to_datetime(df['commence_time'])
