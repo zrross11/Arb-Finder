@@ -37,7 +37,6 @@ def get_nba_odds():
             rows.append([bookmaker_name, team1, odds_team1, team2, odds_team2])
 
     df_odds = pd.DataFrame(rows, columns=['Bookmaker', 'Team1', 'Odds_Team1', 'Team2', 'Odds_Team2'])
-    print(df_odds)
 
     merged_df1 = pd.merge(df, df_odds, left_on=['away_team', 'home_team'], right_on=['Team1', 'Team2'], how='left')
     merged_df2 = pd.merge(df, df_odds, left_on=['home_team', 'away_team'], right_on=['Team1', 'Team2'], how='left')
@@ -50,5 +49,50 @@ def get_nba_odds():
 
     return merged_df
 
+def calculate_total_probability(dataframe):
+    # Group the dataframe by game
+    grouped = dataframe.groupby(['commence_time', 'home_team', 'away_team'])
+    
+    # Initialize an empty list to store the results
+    results = []
+    
+    # Iterate over each group
+    for _, group in grouped:
+        # Calculate the total probability for each matchup
+        margins = []
+        
+        # Iterate over each row in the group
+        for i in range(len(group)):
+            for j in range(len(group)):
+                # Calculate the total probability for each bookmaker pair
+                margin = (1 / group.iloc[i]['Odds_Team1']) + (1 / group.iloc[j]['Odds_Team2'])
+                margins.append({
+                    'market_margin': margin,
+                    'Odds_Team1': group.iloc[i]['Odds_Team1'],
+                    'Odds_Team2': group.iloc[j]['Odds_Team2'],
+                    'Bookmaker1': group.iloc[i]['Bookmaker'],
+                    'Bookmaker2': group.iloc[j]['Bookmaker'],
+                    'Home Team': group.iloc[i]['home_team'],
+                    'Away Team': group.iloc[j]['away_team'],
+                })        
+        # Append the results to the list
+        results.extend(margins)
+
+    # Convert the results to a dataframe
+    results_df = pd.DataFrame(results)
+    
+    # Sort the dataframe by the smallest total probability
+    sorted_df = results_df.sort_values(by='market_margin')
+    top_5 = sorted_df.head(5)
+
+    return top_5
+
+
 # Get upcoming NBA odds
-print(get_nba_odds())
+df = get_nba_odds()
+print(df)
+result = calculate_total_probability(df)
+print("Top 5 values sorted by best arbing opportunities:")
+print(result)
+
+
