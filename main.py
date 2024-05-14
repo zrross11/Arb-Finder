@@ -16,7 +16,7 @@ def main():
     key = input()
 
     df = get_odds(options[int(key)])
-    print(df)
+    print(df)   
     result = calculate_margins(df)
     print("Top 5 values sorted by best arbing opportunities:")
     print(result)
