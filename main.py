@@ -45,6 +45,7 @@ def get_nba_odds():
 
 
     merged_df.dropna(subset=['Team1', 'Team2'], inplace=True)
+    merged_df.drop(['id', 'bookmakers', 'Team1', 'Team2'], axis=1, inplace=True)
 
 
     return merged_df
